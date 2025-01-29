@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Шифр Полибия</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            max-width: 300px;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Шифр Полибия</h1>
+<label for="textInput">Введите текст для шифрования:</label>
+<input type="text" id="textInput" />
+
+<button id="encryptButton">Зашифровать и сохранить в файл</button>
+
+<label for="fileInput">Загрузите файл с зашифрованным текстом:</label>
+<input type="file" id="fileInput" accept=".txt" />
+<button id="decryptButton">Расшифровать и показать результат</button>
+
+<div class="output">
+    <h2>Результаты:</h2>
+    <p id="decryptedOutput"></p>
+</div>
+
+<script>
+const polybiusSquare = [
+    ['A', 'B', 'C', 'D', 'E'],
+    ['F', 'G', 'H', 'I', 'K'],
+    ['L', 'M', 'N', 'O', 'P'],
+    ['Q', 'R', 'S', 'T', 'U'],
+    ['V', 'W', 'X', 'Y', 'Z']
+];
+
+function encrypt(text) {
+    let encrypted = '';
+    text = text.toUpperCase();
+    for (let char of text) {
+        if (char === ' ') {
+            encrypted += ' '; // сохраняем пробелы
+            continue;
+        }
+        for (let i = 0; i < polybiusSquare.length; i++) {
+            const index = polybiusSquare[i].indexOf(char);
+            if (index !== -1) {
+                encrypted += (i + 1) + '' + (index + 1);
+                break;
+            }
+        }
+    }
+    return encrypted;
+}
+
+function decrypt(encryptedText) {
+    let decrypted = '';
+    for (let i = 0; i < encryptedText.length; i += 2) {
+        const row = parseInt(encryptedText[i]) - 1;
+        const col = parseInt(encryptedText[i + 1]) - 1;
+        // Добавляем проверку на пустую строку и невалидные индексы
+        if (isNaN(row) || isNaN(col) || row < 0 || row >= polybiusSquare.length || col < 0 || col >= polybiusSquare[0].length) {
+            decrypted += encryptedText[i]; // сохраняем символ, если он не является частью шифра
+            i--; // остаемся на текущем символе
+            continue;
+        }
+        decrypted += polybiusSquare[row][col];
+    }
+    return decrypted;
+}
+
+// Обработка события для шифрования и сохранения файла
+document.getElementById('encryptButton').onclick = function() {
+    const textToEncrypt = document.getElementById('textInput').value;
+    const encryptedText = encrypt(textToEncrypt);
+
+    // Создаем файл с зашифрованным текстом
+    const blob = new Blob([encryptedText], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = 'encrypted.txt'; // Имя файла
+    link.click(); // "Кликаем" на ссылку для скачивания
+};
+
+// Обработка события загрузки файла и расшифровки
+document.getElementById('decryptButton').onclick = function() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0]; // Получаем загруженный файл
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const encryptedText = e.target.result.trim(); // Получаем содержимое файла и убираем лишние пробелы
+            const decryptedText = decrypt(encryptedText);
+            document.getElementById('decryptedOutput').textContent = `Расшифрованный текст: ${decryptedText}`;
+        };
+        reader.readAsText(file); // Читаем файл как текст
+    } else {
+        document.getElementById('decryptedOutput').textContent = 'Пожалуйста, загрузите файл.';
+    }
+};
+</script>
+
+</body>
+</html>

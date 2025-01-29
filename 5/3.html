@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Решение квадратного уравнения</title>
+</head>
+<body>
+    <h1>Решение квадратного уравнения</h1>
+    <input type="number" id="a" placeholder="Введите значение a" />
+    <input type="number" id="b" placeholder="Введите значение b" />
+    <input type="number" id="c" placeholder="Введите значение c" />
+    <button onclick="solveQuadraticEquation()">Решить уравнение</button>
+    <div id="resultOutput"></div>
+
+    <script>
+        function solveQuadraticEquation() {
+            const a = parseFloat(document.getElementById('a').value);
+            const b = parseFloat(document.getElementById('b').value);
+            const c = parseFloat(document.getElementById('c').value);
+            const resultOutput = document.getElementById('resultOutput');
+
+            if (isNaN(a) || isNaN(b) || isNaN(c)) {
+                resultOutput.innerText = "Ошибка: все коэффициенты должны быть вещественными числами.";
+                return;
+            }
+
+            if (a === 0) {
+                if (b === 0) {
+                    resultOutput.innerText = c === 0 ? "Уравнение имеет бесконечно много решений." : "Уравнение не имеет решений.";
+                } else {
+                    const x = -c / b; // Линейное уравнение
+                    resultOutput.innerText = `Уравнение имеет одно решение: x = ${x}`;
+                }
+                return;
+            }
+
+            // Дискриминант
+            const discriminant = b * b - 4 * a * c;
+
+            if (discriminant > 0) {
+                const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+                const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+                resultOutput.innerText = `Уравнение имеет два различных решения: x1 = ${x1}, x2 = ${x2}`;
+            } else if (discriminant === 0) {
+                const x = -b / (2 * a);
+                resultOutput.innerText = `Уравнение имеет одно решение: x = ${x}`;
+            } else {
+                resultOutput.innerText = "Уравнение не имеет вещественных решений.";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Программы на JavaScript</title>
+</head>
+<body>
+    <h1>Проверка возраста</h1>
+    <input type="number" id="yearOfBirth" placeholder="Введите год рождения" />
+    <button onclick="checkAge()">Проверить возраст</button>
+    <div id="ageOutput"></div>
+
+    <hr>
+
+    <h1>Циклические вычисления значений функции</h1>
+    <input type="text" id="functionInput" placeholder="Введите R1, R2, R3 через запятую" />
+    <button onclick="calculateFunction()">Вычислить функцию</button>
+    <div id="functionOutput"></div>
+
+    <hr>
+
+    <h1>Очередь строк</h1>
+    <input type="text" id="queueInput" placeholder="Введите строку" />
+    <button onclick="addToQueue()">Вставить в очередь</button>
+    <input type="text" id="removeInput" placeholder="Введите строку для удаления" />
+    <button onclick="removeFromQueue()">Удалить из очереди</button>
+    <button onclick="peekQueue()">Показать первый элемент</button>
+    <button onclick="displayQueue()">Показать очередь</button>
+    <div id="queueOutput"></div>
+
+    <script>
+        // Проверка возраста
+        function checkAge() {
+            const yearOfBirth = Number(document.getElementById('yearOfBirth').value);
+            const currentYear = new Date().getFullYear();
+            const ageOutput = document.getElementById('ageOutput');
+
+            try {
+                if (yearOfBirth < 0) {
+                    throw new Error("Год рождения не может быть отрицательным!");
+                }
+                if (yearOfBirth > currentYear) {
+                    throw new Error("Год рождения не может быть больше текущего года!");
+                }
+                const age = currentYear - yearOfBirth;
+                ageOutput.innerText = `Ваш возраст: ${age} лет.`;
+            } catch (error) {
+                ageOutput.innerText = error.message;
+            }
+        }
+
+        // Циклические вычисления значений функции
+        function calculateFunction() {
+            const input = document.getElementById('functionInput').value.split(',').map(Number);
+            const functionOutput = document.getElementById('functionOutput');
+
+            if (input.length !== 3 || input.some(isNaN)) {
+                functionOutput.innerText = "Ошибка ввода: введите 3 вещественных числа!";
+                return;
+            }
+
+            const [R1, R2, R3] = input;
+            const pi = Math.PI;
+
+            try {
+                const result = (Math.sin(R2) / pi) * R1 + R3;
+                functionOutput.innerText = `Sin(${R2}) / π * ${R1} + ${R3} = ${result}`;
+            } catch (error) {
+                functionOutput.innerText = `Ошибка в функции: ${error.message}`;
+            }
+        }
+
+        // Реализация очереди
+        class Queue {
+            constructor(maxSize) {
+                this.maxSize = maxSize;
+                this.items = [];
+            }
+
+            enqueue(item) {
+                if (this.isFull()) {
+                    throw new Error("Ошибка: Очередь переполнена!");
+                }
+                this.items.push(item);
+            }
+
+            dequeue(item) {
+                const index = this.items.indexOf(item);
+                if (index === -1) {
+                    throw new Error("Ошибка: Элемент не найден в очереди!");
+                }
+                return this.items.splice(index, 1)[0];
+            }
+
+            isFull() {
+                return this.items.length >= this.maxSize;
+            }
+
+            isEmpty() {
+                return this.items.length === 0;
+            }
+
+            peek() {
+                if (this.isEmpty()) {
+                    throw new Error("Ошибка: Очередь пуста, невозможно получить первый элемент!");
+                }
+                return this.items[0];
+            }
+        }
+
+        const maxSize = 5; // Максимальный размер очереди
+        const queue = new Queue(maxSize);
+
+        function addToQueue() {
+            const value = document.getElementById('queueInput').value;
+            const queueOutput = document.getElementById('queueOutput');
+
+            try {
+                queue.enqueue(value);
+                queueOutput.innerText = `Добавлено: ${value}`;
+                document.getElementById('queueInput').value = '';
+            } catch (error) {
+                queueOutput.innerText = error.message;
+            }
+        }
+
+        function removeFromQueue() {
+            const value = document.getElementById('removeInput').value;
+            const queueOutput = document.getElementById('queueOutput');
+
+            try {
+                const removedElement = queue.dequeue(value);
+                queueOutput.innerText = `Удалено: ${removedElement}`;
+                document.getElementById('removeInput').value = '';
+            } catch (error) {
+                queueOutput.innerText = error.message;
+            }
+        }
+
+        function peekQueue() {
+            const queueOutput = document.getElementById('queueOutput');
+
+            try {
+                const firstElement = queue.peek();
+                queueOutput.innerText = `Первый элемент: ${firstElement}`;
+            } catch (error) {
+                queueOutput.innerText = error.message;
+            }
+        }
+
+        function displayQueue() {
+            const queueOutput = document.getElementById('queueOutput');
+
+            if (queue.isEmpty()) {
+                queueOutput.innerText = 'Очередь пуста.';
+            } else {
+                queueOutput.innerText = `Очередь: ${queue.items.join(', ')}`;
+            }
+        }
+    </script>
+</body>
+</html>

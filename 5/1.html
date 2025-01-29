@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Определение вида треугольника</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Определение вида треугольника</h1>
+    <input type="number" id="sideA" placeholder="Введите длину стороны A" />
+    <input type="number" id="sideB" placeholder="Введите длину стороны B" />
+    <input type="number" id="sideC" placeholder="Введите длину стороны C" />
+    <button onclick="determineTriangleType()">Определить вид треугольника</button>
+    <div id="resultOutput"></div>
+    
+    <script>
+        function determineTriangleType() {
+            const a = parseFloat(document.getElementById('sideA').value);
+            const b = parseFloat(document.getElementById('sideB').value);
+            const c = parseFloat(document.getElementById('sideC').value);
+            const resultOutput = document.getElementById('resultOutput');
+
+            if (a <= 0 || b <= 0 || c <= 0 || !(a + b > c && a + c > b && b + c > a)) {
+                resultOutput.innerText = "Ошибка: стороны должны быть положительными и удовлетворять неравенству треугольника.";
+                return;
+            }
+
+            if (a === b && b === c) {
+                resultOutput.innerText = "Треугольник равносторонний.";
+            } else if (a === b || b === c || a === c) {
+                if (a * a + b * b === c * c || b * b + c * c === a * a || a * a + c * c === b * b) {
+                    resultOutput.innerText = "Треугольник равнобедренный и прямоугольный.";
+                } else {
+                    resultOutput.innerText = "Треугольник равнобедренный.";
+                }
+            } else {
+                if (a * a + b * b === c * c || b * b + c * c === a * a || a * a + c * c === b * b) {
+                    resultOutput.innerText = "Треугольник прямоугольный.";
+                } else {
+                    resultOutput.innerText = "Треугольник разносторонний.";
+                }
+            }
+        }
+
+        function runTests() {
+            const tests = [
+                { sides: [3, 3, 3], expected: "Треугольник равносторонний." },  // Тест 1
+                { sides: [5, 5, 8], expected: "Треугольник равнобедренный." },  // Тест 2
+                { sides: [3, 4, 5], expected: "Треугольник прямоугольный." },    // Тест 3
+                { sides: [4, 5, 6], expected: "Треугольник разносторонний." },   // Тест 4
+                { sides: [2, 2, 5], expected: "Ошибка: стороны должны быть положительными и удовлетворять неравенству треугольника." } // Тест 5
+            ];
+
+            const testOutput = document.getElementById('testOutput');
+            testOutput.innerHTML = '<table><tr><th>Номер теста</th><th>Назначение теста</th><th>Значения исходных данных</th><th>Ожидаемый результат</th><th>Реакция программы</th><th>Вывод</th></tr>';
+
+            tests.forEach((test, index) => {
+                const [a, b, c] = test.sides;
+                let result;
+                try {
+                    // Имитируем ввод сторон
+                    document.getElementById('sideA').value = a;
+                    document.getElementById('sideB').value = b;
+                    document.getElementById('sideC').value = c;
+                    result = determineTriangleType();
+                } catch (error) {
+                    result = error.message;
+                }
+                
+                const expectedResult = test.expected;
+                testOutput.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${expectedResult.includes("Ошибка") ? "Проверка на треугольник" : "Определение вида треугольника"}</td>
+                        <td>${a}, ${b}, ${c}</td>
+                        <td>${expectedResult}</td>
+                        <td>${result}</td>
+                        <td>${result === expectedResult ? "Тест пройден" : "Тест не пройден"}</td>
+                    </tr>
+                `;
+            });
+
+            testOutput.innerHTML += '</table>';
+        }
+    </script>
+</body>
+</html>

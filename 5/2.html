@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Точка пересечения двух прямых</title>
+</head>
+<body>
+    <h1>Определение точки пересечения двух прямых</h1>
+    <input type="number" id="A" placeholder="Введите A" />
+    <input type="number" id="B" placeholder="Введите B" />
+    <input type="number" id="C" placeholder="Введите C" />
+    <input type="number" id="D" placeholder="Введите D" />
+    <input type="number" id="E" placeholder="Введите E" />
+    <input type="number" id="F" placeholder="Введите F" />
+    <button onclick="findAndDisplayIntersection()">Определить точку пересечения</button>
+    <div id="resultOutput"></div>
+
+    <hr>
+
+    <h1>Тестирование программы</h1>
+    <button onclick="runTests()">Запустить тесты</button>
+    <div id="testOutput"></div>
+
+    <script>
+        function findIntersection(A, B, C, D, E, F) {
+            // Проверяем, являются ли коэффициенты вещественными числами
+            if ([A, B, C, D, E, F].some(coef => typeof coef !== 'number' || isNaN(coef))) {
+                throw new Error("Коэффициенты должны быть вещественными числами.");
+            }
+
+            // Определяем коэффициенты для решаемой системы
+            const denominator = A * E - B * D;
+
+            if (denominator === 0) {
+                // Прямые либо параллельны, либо совпадают
+                if (A * F === C * D && B * F === C * E) {
+                    return "Прямые совпадают (множество решений)";
+                } else {
+                    return "Прямые параллельны (нет решений)";
+                }
+            }
+
+            // Уникальная точка пересечения
+            const x = (C * E - B * F) / denominator;
+            const y = (A * F - C * D) / denominator;
+
+            return { x, y };
+        }
+
+        function findAndDisplayIntersection() {
+            const A = parseFloat(document.getElementById('A').value);
+            const B = parseFloat(document.getElementById('B').value);
+            const C = parseFloat(document.getElementById('C').value);
+            const D = parseFloat(document.getElementById('D').value);
+            const E = parseFloat(document.getElementById('E').value);
+            const F = parseFloat(document.getElementById('F').value);
+            const resultOutput = document.getElementById('resultOutput');
+
+            try {
+                const result = findIntersection(A, B, C, D, E, F);
+                if (typeof result === 'string') {
+                    resultOutput.innerText = result; // Выводим результат в случае параллельности или совпадений
+                } else {
+                    resultOutput.innerText = `Точка пересечения: (${result.x}, ${result.y})`;
+                }
+            } catch (error) {
+                resultOutput.innerText = error.message;
+            }
+        }
+
+        function runTests() {
+            const testsEquivalence = [
+                { A: 1, B: 2, C: 3, D: 4, E: 5, F: 6 }, // Все вещественные
+                { A: 'a', B: 2, C: 3, D: 4, E: 5, F: 6 }, // A - не вещественное
+                { A: 1, B: 'b', C: 3, D: 4, E: 5, F: 6 }, // B - не вещественное
+                { A: 1, B: 2, C: 'c', D: 4, E: 5, F: 6 }, // C - не вещественное
+                { A: 1, B: 2, C: 3, D: 'd', E: 5, F: 6 }, // D - не вещественное
+                { A: 1, B: 2, C: 3, D: 4, E: 'e', F: 6 }, // E - не вещественное
+                { A: 1, B: 2, C: 3, D: 4, E: 5, F: 'f' }  // F - не вещественное
+            ];
+
+            const testsBoundary = [
+                { A: 1, B: 1, C: 2, D: 1, E: -1, F: 0 }, // Единственное решение
+                { A: 1, B: 1, C: 2, D: 2, E: 2, F: 4 }, // Множество решений
+                { A: 1, B: -1, C: 0, D: 2, E: -2, F: 0 } // Параллельные прямые
+            ];
+
+            const testsCauseEffect = [
+                { A: 1, B: 2, C: 3, D: 1, E: -1, F: 0 }, // Пересечение
+                { A: 0, B: 1, C: 2, D: 1, E: 0, F: 3 }, // Пересечение
+                { A: 0, B: 1, C: 3, D: 0, E: 1, F: 5 }  // Параллельные
+            ];
+
+            const testsErrorAssumption = [
+                { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0 } // Все нули
+            ];
+
+            const testOutput = document.getElementById('testOutput');
+            testOutput.innerHTML = '';
+
+            const allTests = [
+                { name: "Эквивалентные разбиения", tests: testsEquivalence },
+                { name: "Граничные условия", tests: testsBoundary },
+                { name: "Причинно-следственные связи", tests: testsCauseEffect },
+                { name: "Предположение об ошибке", tests: testsErrorAssumption }
+            ];
+
+            allTests.forEach(suite => {
+                testOutput.innerHTML += `<h3>Тесты для методологии: ${suite.name}</h3>`;
+                suite.tests.forEach((test, index) => {
+                    try {
+                        const result = findIntersection(test.A, test.B, test.C, test.D, test.E, test.F);
+                        testOutput.innerHTML += `Тест ${index + 1}: ${JSON.stringify(test)} => Результат: ${JSON.stringify(result)}<br>`;
+                    } catch (error) {
+                        testOutput.innerHTML += `Тест ${index + 1}: ${JSON.stringify(test)} => Ошибка: ${error.message}<br>`;
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>
